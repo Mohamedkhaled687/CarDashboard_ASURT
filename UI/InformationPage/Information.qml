@@ -8,24 +8,28 @@ Rectangle {
     property real scaleFactor : 1.0
     property string sessionName: ""
     property string portNumber: ""
+    property string portName: ""
+    property int baudRate: 0
+    property bool isSerialSource: false
     property real maxLateralG: 3.5  // Maximum lateral G-force (cornering)
     property real maxLongitudinalG: 2.0  // Maximum longitudinal G-force (acceleration)
     property real maxBrakingG: 3.5  // Maximum braking G-force
-    property real xDiagram: udpClient ? ((udpClient.lateralG / maxLateralG) * (ggImage.width / 2 - 20)) : 0
-    property real yDiagram: udpClient ? ((udpClient.longitudinalG / maxLongitudinalG) * (ggImage.height / 2 - 20)) : 0
+    property real xDiagram: (communicationManager.lateralG / maxLateralG) * (ggImage.width / 2 - 20)
+    property real yDiagram: (communicationManager.longitudinalG / maxLongitudinalG) * (ggImage.height / 2 - 20)
 
     color: "#1A3438"
     radius: 40
     border.color: "#A6F1E0"
     border.width: 5
 
-    /******* Status Bar *********/
+        /******* Status Bar *********/
 
     StatusBar {
         id: statusBar
         nameofsession : root.sessionName
-        nameOfport : root.portNumber
-    }
+        nameOfport : communicationManager.isSerialSource ? root.portName + " (" + root.baudRate + ")" : root.portNumber
+   }
+
 
 
 
@@ -65,6 +69,7 @@ Rectangle {
             }
             SteeringWheel {
                 id: steeringWheel
+                encoderAngle : communicationManager ? communicationManager.encoderAngle : 0
                 anchors.centerIn: parent
             }
         }
@@ -99,7 +104,7 @@ Rectangle {
                 id: fl
                 wheelPos: "FL"
                 scaleFactor : 1.1
-                currentSpeed: udpClient ? udpClient.speedFL : 0
+                currentSpeed: communicationManager ? communicationManager.speedFL : 0
                 anchors {
                     top : car.top
                     left : proximityRect.left
@@ -111,7 +116,7 @@ Rectangle {
                 id: fr
                 wheelPos: "FR"
                 scaleFactor : 1.1
-                currentSpeed: udpClient ? udpClient.speedFR : 0
+                currentSpeed: communicationManager ? communicationManager.speedFR : 0
                 anchors {
                     top : car.top
                     right : proximityRect.right
@@ -124,7 +129,7 @@ Rectangle {
                 id: bl
                 wheelPos: "BL"
                 scaleFactor : 1.1
-                currentSpeed: udpClient ? udpClient.speedBL : 0
+                currentSpeed: communicationManager ? communicationManager.speedBL : 0
                 anchors {
                     bottom : car.bottom
                     left : proximityRect.left
@@ -137,29 +142,13 @@ Rectangle {
                 id: br
                 wheelPos: "BR"
                 scaleFactor : 1.1
-                currentSpeed: udpClient ? udpClient.speedBR : 0
+                currentSpeed: communicationManager ? communicationManager.speedBR : 0
                 anchors {
                     bottom : car.bottom
                     right : proximityRect.right
                     bottomMargin : 70
                     rightMargin : 20
                 }
-            }
-
-            Connections {
-                  target: udpClient
-                  function onSpeedFRChanged() {
-                      fr.currentSpeed = udpClient.speedFR;
-                  }
-                  function onSpeedFLChanged() {
-                      fl.currentSpeed = udpClient.speedFL;
-                  }
-                  function onSpeedBRChanged() {
-                      br.currentSpeed = udpClient.speedBR;
-                  }
-                  function onSpeedBLChanged() {
-                      bl.currentSpeed = udpClient.speedBL;
-                  }
             }
         }
     }
@@ -191,7 +180,7 @@ Rectangle {
 
         Speedometer {
             id: speedometer
-            speed: udpClient ? udpClient.speed : 0
+            speed: communicationManager ? communicationManager.speed : 0
             anchors {
                 left: parent.left
                 leftMargin: -20
@@ -202,7 +191,7 @@ Rectangle {
 
         RpmMeter {
             id: rpmMeter
-            rpm: udpClient ? udpClient.rpm : 0
+            rpm: communicationManager ? communicationManager.rpm : 0
             anchors {
                 left: speedometer.right
                 right: parent.right
@@ -234,7 +223,7 @@ Rectangle {
 
         AcceleratorPedal {
             id: acceleratorPedal
-            pedalPosition: udpClient ? udpClient.accPedal : 0
+            pedalPosition:  communicationManager ? communicationManager.accPedal : 0
             anchors {
                 bottom: parent.bottom
                 left: parent.left
@@ -244,7 +233,7 @@ Rectangle {
 
         BrakePadel {
             id: brakePedal
-            pedalPosition: udpClient ? udpClient.brakePedal : 0
+            pedalPosition: communicationManager ? communicationManager.brakePedal : 0
             anchors {
                 bottom: parent.bottom
                 left: acceleratorPedal.right
@@ -254,6 +243,7 @@ Rectangle {
 
         TemperatureIndicator {
             id: temperatureIndicator
+            temperature: communicationManager ? communicationManager.temperature : 0
             anchors {
                 top: parent.top
                 left: parent.left
@@ -265,6 +255,7 @@ Rectangle {
         BatteryLevelIndicator {
             id: batteryLevelIndicator
             scaleFactor: parent.height / 222.22
+            batteryLevel: communicationManager ? communicationManager.batteryLevel : 0
             anchors {
                 right: parent.right
                 top: parent.top
@@ -440,7 +431,7 @@ Rectangle {
             }
 
             Text {
-                text: "Lateral G: " + (udpClient ? udpClient.lateralG.toFixed(2) : "0.00") + " G"
+                text: "Lateral G: " + communicationManager.lateralG.toFixed(2) + " G"
                 color: "white"
                 font {
                     family: "Arial"
@@ -450,7 +441,7 @@ Rectangle {
             }
 
             Text {
-                text: "Longitudinal G: " + (udpClient ? udpClient.longitudinalG.toFixed(2) : "0.00") + " G"
+                text: "Longitudinal G: " + communicationManager.longitudinalG.toFixed(2) + " G"
                 color: "white"
                 font {
                     family: "Arial"

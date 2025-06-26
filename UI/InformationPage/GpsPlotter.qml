@@ -122,27 +122,27 @@ Rectangle {
     }
 
     Connections {
-        target: udpClient
+        target: communicationManager
         function onGpsLongitudeChanged() {
-            if (isValidCoordinate(udpClient.gpsLatitude, udpClient.gpsLongitude)) {
-                gpsDisplay.gpsLongitude = udpClient.gpsLongitude;
-                currentLongitude = udpClient.gpsLongitude;
-                currentLatitude = udpClient.gpsLatitude;
-                var newCoord = QtPositioning.coordinate(udpClient.gpsLatitude, udpClient.gpsLongitude);
+            if (isValidCoordinate(communicationManager.gpsLatitude , communicationManager.gpsLongitude)) {
+                gpsDisplay.gpsLongitude = communicationManager.gpsLongitude;
+                currentLongitude = communicationManager.gpsLongitude;
+                currentLatitude = communicationManager.gpsLatitude;
+                var newCoord = QtPositioning.coordinate(communicationManager.gpsLatitude, communicationManager.gpsLongitude);
                 map.center = newCoord;
                 // Only update path when both coordinates have changed
-                updatePath(udpClient.gpsLatitude, udpClient.gpsLongitude);
+                updatePath(communicationManager.gpsLatitude, communicationManager.gpsLongitude);
             }
         }
         function onGpsLatitudeChanged() {
-            if (isValidCoordinate(udpClient.gpsLatitude, udpClient.gpsLongitude)) {
-                gpsDisplay.gpsLatitude = udpClient.gpsLatitude;
-                currentLongitude = udpClient.gpsLongitude;
-                currentLatitude = udpClient.gpsLatitude;
-                var newCoord = QtPositioning.coordinate(udpClient.gpsLatitude, udpClient.gpsLongitude);
+            if (isValidCoordinate(communicationManager.gpsLatitude , communicationManager.gpsLongitude)) {
+                gpsDisplay.gpsLatitude = communicationManager.gpsLatitude;
+                currentLongitude = communicationManager.gpsLongitude;
+                currentLatitude = communicationManager.gpsLatitude;
+                var newCoord = QtPositioning.coordinate(communicationManager.gpsLatitude, communicationManager.gpsLongitude);
                 map.center = newCoord;
                 // Only update path when both coordinates have changed
-                updatePath(udpClient.gpsLatitude, udpClient.gpsLongitude);
+                updatePath(communicationManager.gpsLatitude, communicationManager.gpsLongitude);
             }
         }
     }

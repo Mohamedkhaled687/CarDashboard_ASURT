@@ -2,8 +2,9 @@ import QtQuick 2.15
 
 Item {
     id: root
-    property int batteryLevel: udpClient ? udpClient.batteryLevel : 0
+    property int batteryLevel: 0
     property real scaleFactor: 1.0
+
     Column {
         id: indicator
         anchors.centerIn: parent
@@ -57,9 +58,9 @@ Item {
             }
         }
         Connections {
-            target: udpClient
+            target: communicationManager
             onBatteryLevelChanged: {
-                batteryLevel = udpClient.batteryLevel;
+                batteryLevel = communicationManager ? communicationManager.batteryLevel : 0;
                 batteryCanvas.requestPaint();
             }
         }

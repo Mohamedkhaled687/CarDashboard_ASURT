@@ -1,25 +1,21 @@
-#ifndef UDPCLIENT_H
-#define UDPCLIENT_H
+#ifndef SERIALMANAGER_H
+#define SERIALMANAGER_H
 
 #include <QObject>
-#include <QUdpSocket>
+#include <QSerialPort>
 #include <QThread>
 #include <QThreadPool>
 #include <QAtomicInt>
-#include <QNetworkDatagram>
 #include <atomic>
 
 // Forward declarations
-class UdpReceiverWorker;
-class UdpParserWorker;
+class SerialReceiverWorker;
+class SerialParserWorker;
 
 /**
- * @brief The UdpClient class provides a high-performance UDP client for receiving and parsing datagrams
- *
- * This class uses a simplified threading model with proper thread pool utilization for maximum performance.
- * It maintains the same public API as the original implementation while significantly reducing complexity.
+ * @brief The SerialManager class provides a high-performance serial client for receiving and parsing data
  */
-class UdpClient : public QObject
+class SerialManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(float speed READ speed NOTIFY speedChanged)
@@ -39,32 +35,12 @@ class UdpClient : public QObject
     Q_PROPERTY(double longitudinalG READ longitudinalG NOTIFY longitudinalGChanged)
 
 public:
-    explicit UdpClient(QObject *parent = nullptr); // Initialize the Client , its threads and workers.
-    ~UdpClient();
+    explicit SerialManager(QObject *parent = nullptr);
+    ~SerialManager();
 
-    /**
-     * @brief Start the UDP client on the specified port
-     * @param port The UDP port to listen on
-     * @return True if successful, false otherwise
-     */
-    Q_INVOKABLE bool start(quint16 port);
-
-    /**
-     * @brief Stop the UDP client
-     * @return True if successful, false otherwise
-     */
+    Q_INVOKABLE bool start(const QString &portName, qint32 baudRate);
     Q_INVOKABLE bool stop();
-
-    /**
-     * @brief Configure the number of parser threads
-     * @param count The number of parser threads to use (default: number of CPU cores)
-     */
     Q_INVOKABLE void setParserThreadCount(int count);
-
-    /**
-     * @brief Enable or disable debug mode
-     * @param enabled Whether debug mode should be enabled
-     */
     Q_INVOKABLE void setDebugMode(bool enabled);
 
     // Property getters
@@ -106,7 +82,7 @@ signals:
     void errorOccurred(const QString &error);
 
     // Internal signals for worker communication
-    void startReceiving(quint16 port);
+    void startReceiving(const QString &portName, qint32 baudRate);
     void stopReceiving();
 
 private slots:
@@ -116,24 +92,20 @@ private slots:
                           int speedFL, int speedFR, int speedBL, int speedBR,
                           double lateralG, double longitudinalG);
 
-    void handleError(const QString &error); // Handles error messages from workers.
-
-    void handleDatagramReceived(const QByteArray &data); // Receives raw datagrams from the receiver worker and dispatches them to parser workers.
+    void handleError(const QString &error);
+    void handleSerialDataReceived(const QByteArray &data);
 
 private:
-    // Worker threads
-    QThread m_receiverThread;            // Dedicated thread for the receiver worker
-    UdpReceiverWorker *m_receiverWorker; // The worker that listens to the UDP datagrams
+    QThread m_receiverThread;
+    SerialReceiverWorker *m_receiverWorker;
 
-    QThreadPool m_parserPool;           // A thread pool to run multiple parsers workers concurrently
-    QList<UdpParserWorker *> m_parsers; // list of  parser worker objects
-    int m_nextParserIndex;              // Used to cycle through parser workers in a round-robin fashion, distributing incoming datagrams among multiple parsers.
+    QThreadPool m_parserPool;
+    QList<SerialParserWorker *> m_parsers;
+    int m_nextParserIndex;
 
-    // Configuration
     int m_parserThreadCount;
     bool m_debugMode;
 
-    // Performance tracking
     std::atomic<qint64> m_datagramsProcessed;
     std::atomic<qint64> m_datagramsDropped;
 
@@ -154,9 +126,10 @@ private:
     std::atomic<double> m_lateralG;
     std::atomic<double> m_longitudinalG;
 
-    // Helper methods
     void initializeParsers();
     void cleanupParsers();
 };
 
-#endif // UDPCLIENT_H
+#endif // SERIALMANAGER_H
+
+

@@ -10,9 +10,9 @@
 
 UdpReceiverWorker::UdpReceiverWorker(QObject *parent)
     : QObject(parent),
-      m_running(false),
-      m_datagramsReceived(0),
-      m_bytesReceived(0)
+    m_running(false),
+    m_datagramsReceived(0),
+    m_bytesReceived(0)
 {
     m_socket = new QUdpSocket(this);
 

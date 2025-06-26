@@ -10,6 +10,9 @@ Rectangle {
     property real scaleFactor: 1.0
     property string sessionName: ""
     property string portNumber: ""
+    property string portName: ""
+    property int baudRate: 0
+    property bool isSerialSource: false
 
     color: "#1A3438"
     anchors.fill: parent
@@ -20,13 +23,16 @@ Rectangle {
     // Add Timer component for auto-navigation
     Timer {
         id: navigationTimer
-        interval: 500  // 10 seconds
+        interval: 300  // 10 seconds
         running: true    // Start timer automatically when the page loads
         repeat: false    // Run only once
         onTriggered: {
             stackView.push("../InformationPage/Information.qml", {
                 "sessionName": root.sessionName,
-                "portNumber": root.portNumber
+                "portNumber": root.portNumber,
+                "portName": root.portName,
+                "baudRate": root.baudRate,
+                "isSerialSource": root.isSerialSource
             })
         }
     }
@@ -57,7 +63,7 @@ Rectangle {
     StatusBar {
         id: statusBar
         nameofsession : root.sessionName
-        nameOfport : root.portNumber
+        nameOfport : root.isSerialSource ? root.portName + " (" + root.baudRate + ")" : root.portNumber
 
     }
 
@@ -75,8 +81,12 @@ Rectangle {
         onClicked: {
             // Stop the timer
             navigationTimer.stop()
-            // Tell the UDPClient to stop before popping back
-            udpClient.stop()
+            // Stop the appropriate client before popping back
+            if (root.isSerialSource) {
+                serialManager.stop()
+            } else {
+                udpClient.stop()
+            }
             stackView.pop()
         }
     }

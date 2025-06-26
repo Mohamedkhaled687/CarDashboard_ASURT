@@ -4,6 +4,7 @@ Item {
     id: root
     property real temperature: 0.0
 
+
     Image {
         id: temperatureIndicatorImage
         source: "../Assets/thermometer.png"
@@ -28,10 +29,4 @@ Item {
         }
     }
 
-    Connections {
-        target: udpClient
-        onTemperatureChanged: {
-            temperature = udpClient.temperature;
-        }
-    }
 }

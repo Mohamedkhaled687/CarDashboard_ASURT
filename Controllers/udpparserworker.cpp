@@ -10,9 +10,9 @@
 
 UdpParserWorker::UdpParserWorker(bool debugMode, QObject *parent)
     : QObject(parent),
-      m_debugMode(debugMode),
-      m_running(true),
-      m_datagramsParsed(0)
+    m_debugMode(debugMode),
+    m_running(true),
+    m_datagramsParsed(0)
 {
     setAutoDelete(false);
 }
@@ -164,7 +164,7 @@ void UdpParserWorker::parseDatagram(const QByteArray &data)
                 if (m_debugMode && m_datagramsParsed % 1000 == 0)
                 {
                     qDebug() << "Parser" << QThread::currentThreadId()
-                             << "has processed" << m_datagramsParsed << "datagrams";
+                    << "has processed" << m_datagramsParsed << "datagrams";
                 }
             }
             else

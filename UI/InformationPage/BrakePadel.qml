@@ -8,7 +8,7 @@ Rectangle {
     border.color: "transparent"
     border.width: 2
 
-    property int pedalPosition: udpClient ? udpClient.brakePedal : 0
+    property int pedalPosition: 0
     property real smoothedPosition: pedalPosition
     property int totalBars: 20
     property real scaleFactor: 1.0
@@ -20,12 +20,6 @@ Rectangle {
         }
     }
 
-    Connections {
-        target: udpClient
-        onBrakePedalChanged: {
-            pedalPosition = udpClient.brakePedal;
-        }
-    }
 
     Repeater {
         model: root.totalBars

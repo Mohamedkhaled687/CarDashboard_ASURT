@@ -8,22 +8,16 @@ Rectangle {
     border.color: "transparent"
     border.width: 2
 
-    property int pedalPosition: udpClient ? udpClient.accPedal : 0
+    property int pedalPosition: 0
     property real smoothedPosition: pedalPosition
     property int totalBars: 20
     property real scaleFactor: 1.0
+
 
     Behavior on smoothedPosition {
         NumberAnimation {
             duration: 25
             easing.type: Easing.InOutQuad
-        }
-    }
-
-    Connections {
-        target: udpClient
-        onAccPedalChanged: {
-            pedalPosition = udpClient.accPedal;
         }
     }
 

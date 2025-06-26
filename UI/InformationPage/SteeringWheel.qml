@@ -2,7 +2,7 @@ import QtQuick 2.15
 
 Item {
     id: root
-    property double encoderAngle: udpClient ? udpClient.encoderAngle : 0
+    property double encoderAngle: 0
     property real scaleFactor: 1.0
 
 
@@ -29,12 +29,5 @@ Item {
         height: 160 * root.scaleFactor
         fillMode: Image.PreserveAspectFit
         smooth: true
-    }
-
-    Connections {
-        target: udpClient
-        onEncoderAngleChanged: {
-            encoderAngle = udpClient.encoderAngle;
-        }
     }
 }

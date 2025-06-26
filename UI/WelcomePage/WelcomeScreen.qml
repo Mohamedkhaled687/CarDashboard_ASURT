@@ -146,7 +146,8 @@ Rectangle {
                 }
 
                 TextField {
-                    id : portField
+                    id : serverClientPortField
+                    visible : server_clientradio.checked
                     placeholderText: startButton.inValid_Port ? "Don't Leave This Empty!" : "Enter Port (e.g. , 8080)"
                     placeholderTextColor: startButton.inValid_Port ? "darkRed" : "turquoise"
 
@@ -164,8 +165,141 @@ Rectangle {
                         border.color: parent.activeFocus ? "turquoise" : startButton.inValid_Port ? "darkRed" : "transparent"
                         border.width : 4
                     }
-
                 }
+
+                ComboBox {
+                    id : serialPortField
+                    visible : serialradio.checked
+                    model: ["COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9" , "COM10" , "COM11" , "COM12"]
+                    currentIndex: 2
+                    width: 300 * root.scaleFactor
+                    height: 30 * root.scaleFactor
+
+                    font.pointSize : 12 * root.scaleFactor
+                    anchors.horizontalCenter : parent.horizontalCenter
+
+                    contentItem: Text {
+                        text: serialPortField.displayText
+                        color: "turquoise"
+                        font.pointSize: 13 * root.scaleFactor
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 20
+                    }
+
+                    background: Rectangle {
+                        color: "#636363"
+                        radius: 100
+                        border.color: parent.activeFocus ? "turquoise" : "transparent"
+                        border.width: 4
+                    }
+
+                    delegate : ItemDelegate {
+                        background: Rectangle {
+                            id: itemBackground
+                            width: 300 * root.scaleFactor
+                            color: "#636363"
+                        }
+
+                        contentItem: Text {
+                            text: modelData
+                            color: "turquoise"
+                            font.pointSize: 11 * root.scaleFactor
+                        }
+
+                        MouseArea {
+                            id: control
+                            anchors.fill: itemBackground
+                            hoverEnabled: true
+                            onEntered: {
+                                itemBackground.color = "#4a4848" // Color when hovered
+                            }
+
+                            onPressed: {
+                                serialPortField.currentIndex = index
+                                serialPortField.popup.close()
+                            }
+                            onExited: {
+                                itemBackground.color = "#636363" // Default color when not hovered
+                            }
+                        }
+                    }
+                }
+
+                /**** Field to Get Baud Rate ****/
+
+                Text {
+                    visible : serialradio.checked
+                    text: "Select Baud Rate:"
+                    font {
+                        bold: true
+                        pixelSize: 14 * root.scaleFactor
+                    }
+                    anchors {
+                        left: parent.left
+                    }
+                    color: "white"
+                }
+
+                ComboBox {
+                    id : serialBaudRate
+                    visible : serialradio.checked
+                    model: ["9600", "57600", "115200"]
+                    currentIndex: 2
+                    width: 300 * root.scaleFactor
+                    height: 30 * root.scaleFactor
+
+                    font.pointSize : 12 * root.scaleFactor
+                    anchors.horizontalCenter : parent.horizontalCenter
+
+                    contentItem: Text {
+                        text: serialBaudRate.displayText
+                        color: "turquoise"
+                        font.pointSize: 13 * root.scaleFactor
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 20
+                    }
+
+                    background: Rectangle {
+                        color: "#636363"
+                        radius: 100
+                        border.color: parent.activeFocus ? "turquoise" : "transparent"
+                        border.width: 4
+                    }
+
+                    delegate : ItemDelegate {
+                        background: Rectangle {
+                            id: itemBackground1
+                            width: 300 * root.scaleFactor
+                            color: "#636363"
+                        }
+
+                        contentItem: Text {
+                            text: modelData
+                            color: "turquoise"
+                            font.pointSize: 11 * root.scaleFactor
+                        }
+
+                        MouseArea {
+                            anchors.fill: itemBackground1
+                            hoverEnabled: true
+                            onEntered: {
+                                itemBackground1.color = "#4a4848" // Color when hovered
+                            }
+
+                            onPressed: {
+                                serialBaudRate.currentIndex = index
+                                serialBaudRate.popup.close()
+                            }
+                            onExited: {
+                                itemBackground1.color = "#636363" // Default color when not hovered
+                            }
+                        }
+                    }
+                }
+
+
             }
 
 
@@ -192,35 +326,46 @@ Rectangle {
 
                 onClicked : {
                     inValid_Name = (sessionNameField.text === "")
-                    inValid_Port = (portField.text === "")
 
-                    /* Navigate to the next page if there is an valid_session name and valid port number */
-
-                    if(!inValid_Name && !inValid_Port) {
-                        // Convert port text to integer
-                        var portNumber = parseInt(portField.text.trim())
-
-                        // Validate port number (valid ports are 1-65535)
-                        if (isNaN(portNumber) || portNumber < 1 || portNumber > 65535) {
-                            // Show error for invalid port
-                            inValid_Port = true
-                            return
+                    if (server_clientradio.checked) {
+                        inValid_Port = (serverClientPortField.text === "")
+                        if(!inValid_Name && !inValid_Port) {
+                            var portNumber = parseInt(serverClientPortField.text.trim())
+                            if (isNaN(portNumber) || portNumber < 1 || portNumber > 65535) {
+                                inValid_Port = true
+                                return
+                            }
+                            var success = communicationManager.startUdp(portNumber)
+                            if (success) {
+                                console.log("UDP client started successfully on port: " + portNumber)
+                                stackView.push("WaitingScreen.qml", {
+                                    "sessionName": sessionNameField.text,
+                                    "portNumber": portNumber,
+                                    "isSerialSource": false
+                                })
+                            } else {
+                                console.error("Failed to start UDP client on port: " + portNumber)
+                                inValid_Port = true
+                            }
                         }
-
-                        // Start the UDP client with the entered port
-                        var success = udpClient.start(portNumber)
-
-                        if (success) {
-                            console.log("UDP client started successfully on port: " + portNumber)
-                            // Pass session name and port when navigating to waiting screen
-                            stackView.push("WaitingScreen.qml", {
-                                "sessionName": sessionNameField.text,
-                                "portNumber": portField.text
-                            })
-                        } else {
-                            console.error("Failed to start UDP client on port: " + portNumber)
-                            // Optionally show an error message
-                            inValid_Port = true // Mark as invalid to show error state
+                    } else if (serialradio.checked) {
+                        inValid_Port = (serialPortField.currentIndex === -1 || serialBaudRate.currentIndex === -1)
+                        if(!inValid_Name && !inValid_Port) {
+                            var portName = serialPortField.model[serialPortField.currentIndex]
+                            var baudRate = parseInt(serialBaudRate.model[serialBaudRate.currentIndex])
+                            var success = communicationManager.startSerial(portName, baudRate)
+                            if (success) {
+                                console.log("Serial manager started successfully on port: " + portName + " with baud rate: " + baudRate)
+                                stackView.push("WaitingScreen.qml", {
+                                    "sessionName": sessionNameField.text,
+                                    "portName": portName,
+                                    "baudRate": baudRate,
+                                    "isSerialSource": true
+                                })
+                            } else {
+                                console.error("Failed to start Serial manager on port: " + portName)
+                                inValid_Port = true
+                            }
                         }
                     }
                 }
@@ -314,7 +459,7 @@ Rectangle {
                     top : parent.top
                     margins : 20
                 }
-                spacing : 10
+                spacing : 15
 
                 /**** Field to Get Driver Name ****/
 
@@ -390,6 +535,56 @@ Rectangle {
                         radius: 10
                         border.color: parent.activeFocus ? "turquoise" : "transparent"
                         border.width: 4
+                    }
+                }
+
+
+                Text {
+                    text : "Choose type of Communication : "
+                    font {
+                        bold : true
+                        pixelSize : 15 * root.scaleFactor
+                        family : "Amiri"
+                    }
+
+                    anchors.left : parent.left
+                    color : "turquoise"
+                }
+
+                RadioButton {
+                    id : server_clientradio
+                    checked : true
+                    Text {
+                        id : radio1text
+                        text : "Server Client Communication"
+                        font {
+                            bold : true
+                            family : "DS-Digital"
+                            pixelSize : 18 * root.scaleFactor
+                        }
+                        color: "white"
+
+                        anchors.left : parent.right
+                        anchors.leftMargin : 5
+
+                    }
+                }
+
+                RadioButton {
+                    id : serialradio
+                    Text {
+                        id : radio2text
+                        text : "Serial Communication"
+                        font {
+                            bold : true
+                            family : "DS-Digital"
+                            pixelSize : 18 * root.scaleFactor
+                        }
+                        color: "white"
+
+                        anchors.left : parent.right
+                        anchors.leftMargin : 5
+
                     }
                 }
             }
