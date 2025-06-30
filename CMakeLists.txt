@@ -4,7 +4,7 @@ project(Car_Dashboard VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Network)
+find_package(Qt6 REQUIRED COMPONENTS Quick Network SerialPort Mqtt)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -48,6 +48,18 @@ qt_add_qml_module(appCar_Dashboard
         RESOURCES UI/Assets/GG_Diagram.png UI/Assets/point.png
         SOURCES Controllers/udpreceiverworker.h Controllers/udpreceiverworker.cpp
         SOURCES Controllers/udpparserworker.h Controllers/udpparserworker.cpp
+        SOURCES
+        SOURCES
+        SOURCES
+        SOURCES
+        SOURCES Controllers/serialmanager.cpp Controllers/serialmanager.h Controllers/serialparserworker.cpp Controllers/serialparserworker.h Controllers/serialreceiverworker.cpp Controllers/serialreceiverworker.h
+        SOURCES Controllers/communicationmanager.h Controllers/communicationmanager.cpp
+        RESOURCES UI/Assets/Trial1.jpg
+        RESOURCES UI/Assets/Car1.png
+        RESOURCES UI/Assets/Car2.png
+        SOURCES Controllers/mqttclient.h Controllers/mqttclient.cpp
+        SOURCES Controllers/mqttreceiverworker.h Controllers/mqttreceiverworker.cpp
+        SOURCES Controllers/mqttparserworker.h Controllers/mqttparserworker.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -62,7 +74,7 @@ set_target_properties(appCar_Dashboard PROPERTIES
 )
 
 target_link_libraries(appCar_Dashboard
-    PRIVATE Qt6::Quick Qt6::Network
+    PRIVATE Qt6::Quick Qt6::Network Qt6::SerialPort  Qt6::Mqtt
 )
 
 include(GNUInstallDirs)
