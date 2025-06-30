@@ -14,7 +14,7 @@ UdpParserWorker::UdpParserWorker(bool debugMode, QObject *parent)
     m_running(true),
     m_datagramsParsed(0)
 {
-    setAutoDelete(false);
+    setAutoDelete(true);
 }
 
 UdpParserWorker::~UdpParserWorker()

@@ -44,4 +44,3 @@ private:
 
 #endif // SERIALPARSERWORKER_H
 
-

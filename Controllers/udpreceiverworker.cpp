@@ -76,15 +76,5 @@ void UdpReceiverWorker::processPendingDatagrams()
         // Emit signal with datagram data
         emit datagramReceived(data);
 
-        // Log statistics every 10 seconds
-        if (m_statsTimer.elapsed() > 10000)
-        {
-            qDebug() << "UDP Receiver: Received" << m_datagramsReceived
-                     << "datagrams (" << m_bytesReceived << "bytes) in the last"
-                     << m_statsTimer.elapsed() / 1000.0 << "seconds";
-            m_datagramsReceived = 0;
-            m_bytesReceived = 0;
-            m_statsTimer.restart();
-        }
     }
 }

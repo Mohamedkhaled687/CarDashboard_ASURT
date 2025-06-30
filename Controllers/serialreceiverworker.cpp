@@ -4,8 +4,8 @@
 
 SerialReceiverWorker::SerialReceiverWorker(QObject *parent)
     : QObject(parent),
-      m_serialPort(nullptr),
-      m_receiving(false)
+    m_serialPort(nullptr),
+    m_receiving(false)
 {
 }
 
@@ -88,5 +88,4 @@ void SerialReceiverWorker::handleError(QSerialPort::SerialPortError serialPortEr
         emit errorOccurred(m_serialPort->errorString());
     }
 }
-
 

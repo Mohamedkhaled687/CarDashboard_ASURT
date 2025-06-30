@@ -8,6 +8,8 @@
 // Forward declarations
 class UdpClient;
 class SerialManager;
+class MqttClient;
+
 
 class CommunicationManager : public QObject
 {
@@ -54,6 +56,7 @@ public:
 
     Q_INVOKABLE bool startSerial(const QString &portName, qint32 baudRate);
     Q_INVOKABLE bool startUdp(quint16 port);
+    Q_INVOKABLE bool startMqtt(const QString &brokerAddress, quint16 port, bool useTls, const QString &clientId, const QString &username, const QString &password, const QString &topic);
     Q_INVOKABLE bool stop();
 
     bool isSerialSource() const { return m_isSerialSource; }
@@ -113,13 +116,33 @@ private slots:
     void handleSerialLongitudinalGChanged(double newLongitudinalG);
     void handleSerialError(const QString &error);
 
+
+    void handleMqttSpeedChanged(float newSpeed);
+    void handleMqttRpmChanged(int newRpm);
+    void handleMqttAccPedalChanged(int newAccPedal);
+    void handleMqttBrakePedalChanged(int newBrakePedal);
+    void handleMqttEncoderAngleChanged(double newAngle);
+    void handleMqttTemperatureChanged(float newTemperature);
+    void handleMqttBatteryLevelChanged(int newBatteryLevel);
+    void handleMqttGpsLongitudeChanged(double newLongitude);
+    void handleMqttGpsLatitudeChanged(double newGpsLatitude);
+    void handleMqttSpeedFLChanged(int newSpeedFL);
+    void handleMqttSpeedFRChanged(int newSpeedFR);
+    void handleMqttSpeedBLChanged(int newSpeedBL);
+    void handleMqttSpeedBRChanged(int newSpeedBR);
+    void handleMqttLateralGChanged(double newLateralG);
+    void handleMqttLongitudinalGChanged(double newLongitudinalG);
+    void handleMqttError(const QString &error);
+
 private:
 
 
     UdpClient *m_udpClient;
     SerialManager *m_serialManager;
+    MqttClient *m_mqttClient;
 
-    enum class SourceType { None, Serial, Udp };
+
+    enum class SourceType { None, Serial, Udp, Mqtt };
     SourceType m_currentSource;
 
     // Internal storage for properties
@@ -143,5 +166,4 @@ private:
 };
 
 #endif // COMMUNICATIONMANAGER_H
-
 

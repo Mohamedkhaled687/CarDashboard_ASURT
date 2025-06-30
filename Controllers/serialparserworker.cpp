@@ -5,9 +5,11 @@
 
 SerialParserWorker::SerialParserWorker(bool debugMode, QObject *parent)
     : QObject(parent),
-      m_running(true),
-      m_debugMode(debugMode)
+    m_running(true),
+    m_debugMode(debugMode)
 {
+    setAutoDelete(true);
+
 }
 
 SerialParserWorker::~SerialParserWorker()
@@ -121,7 +123,6 @@ void SerialParserWorker::parseData(const QByteArray &data)
                     gpsLongitude, gpsLatitude, speedFL, speedFR, speedBL, speedBR,
                     lateralG, longitudinalG);
 }
-
 
 
 
