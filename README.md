@@ -141,10 +141,9 @@ speed,rpm,accPedal,brakePedal,encoderAngle,temperature,batteryLevel,gpsLongitude
 
 ## Screenshots and Demonstrations
 - **Session Setup:**
-    ![Image](https://github.com/user-attachments/assets/57af4040-6692-4ea8-bf3c-17cfe9a2edbb)
+   <img width="1748" height="1017" alt="Image" src="https://github.com/user-attachments/assets/bb477943-48df-4a66-ae03-63c54abb7488" />
 - **Dashboard Overview:**
-    ![Image](https://github.com/user-attachments/assets/d0cbf5e2-0fa1-41af-9597-0eb4d85698ca)
-
+    <img width="1749" height="1002" alt="Image" src="https://github.com/user-attachments/assets/92189e08-f3ba-4dd9-8892-9164fabb31f8" />
 ## Video
 https://github.com/user-attachments/assets/76593ab2-9330-4a89-a245-a9e5cc24e4df
 ## Testing
