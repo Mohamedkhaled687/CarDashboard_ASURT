@@ -145,7 +145,7 @@ speed,rpm,accPedal,brakePedal,encoderAngle,temperature,batteryLevel,gpsLongitude
 - **Dashboard Overview:**
     <img width="1749" height="1002" alt="Image" src="https://github.com/user-attachments/assets/92189e08-f3ba-4dd9-8892-9164fabb31f8" />
 ## Video
-https://github.com/user-attachments/assets/76593ab2-9330-4a89-a245-a9e5cc24e4df
+https://github.com/user-attachments/assets/19308ae8-9a57-4d2f-a03e-5d1eeced9129
 ## Testing
 
 ### Unit Testing
